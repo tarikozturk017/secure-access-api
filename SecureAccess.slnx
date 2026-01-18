@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SecureAccess.Api/SecureAccess.Api.csproj" />
+  <Project Path="SecureAccess.Tests/SecureAccess.Tests.csproj" />
+</Solution>
