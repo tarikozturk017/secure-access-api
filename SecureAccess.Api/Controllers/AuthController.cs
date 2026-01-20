@@ -31,12 +31,13 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public ActionResult<AuthResponse> Login(LoginRequest req)
+    public ActionResult<LoginResponse> Login(LoginRequest req, [FromServices] TokenService tokens)
     {
         try
         {
             var user = _auth.Login(req.Email, req.Password);
-            return Ok(new AuthResponse(user.Id, user.Email));
+            var token = tokens.CreateToken(user);
+            return Ok(new LoginResponse(user.Id, user.Email, token));
         }
         catch (UnauthorizedAccessException)
         {
