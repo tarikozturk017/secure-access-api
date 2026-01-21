@@ -38,4 +38,27 @@ public sealed class AuthServiceTests
         Assert.Throws<UnauthorizedAccessException>(() =>
             svc.Login("test@example.com", "WrongPassword!"));
     }
+
+    [Fact]
+    public void Login_Succeeds_ForCorrectPassword()
+    {
+        var repo = new InMemoryUserRepository();
+        var svc = new AuthService(repo);
+
+        svc.Register("test@example.com", "RightPassword!");
+        var user = svc.Login("test@example.com", "RightPassword!");
+
+        Assert.Equal("test@example.com", user.Email);
+    }
+
+    [Fact]
+    public void Register_Fails_ForEmptyEmailOrPassword()
+    {
+        var repo = new InMemoryUserRepository();
+        var svc = new AuthService(repo);
+
+        Assert.Throws<ArgumentException>(() => svc.Register("", "x"));
+        Assert.Throws<ArgumentException>(() => svc.Register("a@b.com", ""));
+    }
+
 }
