@@ -61,4 +61,25 @@ public sealed class AuthServiceTests
         Assert.Throws<ArgumentException>(() => svc.Register("a@b.com", ""));
     }
 
+    [Fact]
+    public void Login_Fails_WhenUserDoesNotExist()
+    {
+        var repo = new InMemoryUserRepository();
+        var svc = new AuthService(repo);
+
+        Assert.Throws<UnauthorizedAccessException>(() =>
+            svc.Login("missing@example.com", "any"));
+    }
+
+    [Fact]
+    public void Register_TrimsEmail_AndIsCaseInsensitiveForDuplicates()
+    {
+        var repo = new InMemoryUserRepository();
+        var svc = new AuthService(repo);
+
+        svc.Register("  Test@Example.com  ", "P@ssw0rd!");
+        Assert.Throws<InvalidOperationException>(() =>
+            svc.Register("test@example.com", "AnotherPass!"));
+    }
+
 }
