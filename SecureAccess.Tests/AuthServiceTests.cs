@@ -82,4 +82,22 @@ public sealed class AuthServiceTests
             svc.Register("test@example.com", "AnotherPass!"));
     }
 
+    [Fact]
+    public void Login_UsesSameError_ForMissingUser_AndWrongPassword()
+    {
+        var repo = new InMemoryUserRepository();
+        var svc = new AuthService(repo);
+
+        // Missing user
+        var ex1 = Assert.Throws<UnauthorizedAccessException>(() =>
+            svc.Login("missing@example.com", "any"));
+
+        // Existing user, wrong password
+        svc.Register("test@example.com", "RightPassword!");
+        var ex2 = Assert.Throws<UnauthorizedAccessException>(() =>
+            svc.Login("test@example.com", "WrongPassword!"));
+
+        Assert.Equal(ex1.Message, ex2.Message);
+    }
+
 }
