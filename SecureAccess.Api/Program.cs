@@ -47,7 +47,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 
 var summaries = new[]
 {
@@ -74,6 +78,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.Run();
+
+public partial class Program { }
 
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
