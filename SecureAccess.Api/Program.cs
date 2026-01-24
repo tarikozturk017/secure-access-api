@@ -6,7 +6,8 @@ using SecureAccess.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
+//builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>(); // Use InMemoryUserRepository for testing/demo purposes
+builder.Services.AddScoped<IUserRepository, SqlUserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add services to the container.
