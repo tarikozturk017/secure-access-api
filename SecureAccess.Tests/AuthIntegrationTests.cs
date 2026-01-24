@@ -34,4 +34,17 @@ public sealed class AuthIntegrationTests : IClassFixture<WebApplicationFactory<P
         Assert.False(string.IsNullOrWhiteSpace(body!.AccessToken));
         Assert.Equal(email, body.Email);
     }
+
+    [Fact]
+    public async Task Register_DuplicateEmail_ReturnsBadRequest()
+    {
+        var email = $"dup{Guid.NewGuid():N}@example.com";
+        var password = "RightPassword!";
+
+        var first = await _client.PostAsJsonAsync("/auth/register", new RegisterRequest(email, password));
+        Assert.Equal(HttpStatusCode.OK, first.StatusCode);
+
+        var second = await _client.PostAsJsonAsync("/auth/register", new RegisterRequest(email, password));
+        Assert.Equal(HttpStatusCode.BadRequest, second.StatusCode);
+    }
 }
