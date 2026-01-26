@@ -11,10 +11,10 @@ public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
     private readonly TokenService _tokens;
-    private readonly RabbitPublisher _publisher;
+    private readonly IRabbitPublisher _publisher;
 
 
-    public AuthController(IAuthService auth, TokenService tokens, RabbitPublisher publisher)
+    public AuthController(IAuthService auth, TokenService tokens, IRabbitPublisher publisher)
     {
         _auth = auth;
         _tokens = tokens;

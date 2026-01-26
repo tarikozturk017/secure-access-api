@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using RabbitMQ.Client;
 
-public sealed class RabbitPublisher
+namespace SecureAccess.Api.Services;
+
+public sealed class RabbitPublisher : IRabbitPublisher
 {
     private readonly string _host = "localhost";
 
