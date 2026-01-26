@@ -11,11 +11,14 @@ public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
     private readonly TokenService _tokens;
+    private readonly RabbitPublisher _publisher;
 
-    public AuthController(IAuthService auth, TokenService tokens)
+
+    public AuthController(IAuthService auth, TokenService tokens, RabbitPublisher publisher)
     {
         _auth = auth;
         _tokens = tokens;
+        _publisher = publisher;
     }
 
     [HttpPost("register")]
@@ -37,12 +40,18 @@ public sealed class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public ActionResult<LoginResponse> Login(LoginRequest req)
+    public async Task<ActionResult<LoginResponse>> Login(LoginRequest req)
     {
         try
         {
             var user = _auth.Login(req.Email, req.Password);
             var token = _tokens.CreateToken(user);
+
+            await _publisher.PublishAsync(
+                "audit.userlogins",
+                $"UserLoggedIn:{user.Id}:{user.Email}:{DateTime.UtcNow:o}"
+            );
+
             return Ok(new LoginResponse(user.Id, user.Email, token));
         }
         catch (UnauthorizedAccessException)
