@@ -17,6 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton<IRabbitPublisher, RabbitPublisher>();
+builder.Services.AddScoped<IAuditLogRepository, SqlAuditLogRepository>();
+
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
