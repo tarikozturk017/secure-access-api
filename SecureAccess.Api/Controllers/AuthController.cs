@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SecureAccess.Api.Contracts;
 using SecureAccess.Api.Services;
+using System.Text.Json;
 
 namespace SecureAccess.Api.Controllers;
 
@@ -47,10 +48,10 @@ public sealed class AuthController : ControllerBase
             var user = _auth.Login(req.Email, req.Password);
             var token = _tokens.CreateToken(user);
 
-            await _publisher.PublishAsync(
-                "audit.userlogins",
-                $"UserLoggedIn:{user.Id}:{user.Email}:{DateTime.UtcNow:o}"
-            );
+            var evt = new UserLoggedInEvent(user.Id, user.Email, DateTime.UtcNow);
+            var json = JsonSerializer.Serialize(evt);
+
+            await _publisher.PublishAsync("audit.userlogins", json);
 
             return Ok(new LoginResponse(user.Id, user.Email, token));
         }
