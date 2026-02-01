@@ -12,13 +12,13 @@ public sealed class  SqlAuditLogRepository : IAuditLogRepository
             ?? throw new InvalidOperationException("Missing connection string: Default");
     }
 
-    public void Add(string eventType, string payload, DateTime occuredAtUtc)
+    public void Add(string eventType, string payload, DateTime occurredAtUtc)
     {
         using var conn = new SqlConnection(_connStr);
         
         const string sql = """
-            INSERT INTO dbo.AutitLogs (Id, EventType, Payload, OccuredAtUtc)
-            VALUES (@Id, @EventType, @Payload, @OccuredAtUtc)
+            INSERT INTO dbo.AuditLogs (Id, EventType, Payload, OccurredAtUtc)
+            VALUES (@Id, @EventType, @Payload, @OccurredAtUtc)
             """; 
 
         conn.Execute(sql, new
@@ -26,7 +26,7 @@ public sealed class  SqlAuditLogRepository : IAuditLogRepository
             Id = Guid.NewGuid(),
             EventType = eventType,
             Payload = payload,
-            OccuredAtUtc = occuredAtUtc
+            OccurredAtUtc = occurredAtUtc
         });
     }
 }

@@ -2,5 +2,5 @@
 
 public interface IAuditLogRepository
 {
-    void Add(string eventType, string payload, DateTime occuredAtUtc);
+    void Add(string eventType, string payload, DateTime occurredAtUtc);
 }
