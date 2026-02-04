@@ -23,4 +23,22 @@ public sealed class LinqBasicsTests
 
         Assert.Equal(2, loginEmails.Count);
     }
+
+    [Fact]
+    public void Linq_Any_And_FirstOrDefault()
+    {
+        var audits = new List<Audit>
+        {
+            new("UserLoggedIn", "a@example.com", DateTime.UtcNow.AddMinutes(-10)),
+            new("UserRegistered", "a@example.com", DateTime.UtcNow.AddMinutes(-2)),
+        };
+
+        var hasLogin = audits.Any(a => a.EventType == "UserLoggedIn");
+        Assert.True(hasLogin);
+
+        var firstRegister = audits.FirstOrDefault(a => a.EventType == "UserRegistered");
+        Assert.NotNull(firstRegister);
+        Assert.Equal("a@example.com", firstRegister!.Email);
+    }
+
 }
