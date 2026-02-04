@@ -41,4 +41,36 @@ public sealed class LinqBasicsTests
         Assert.Equal("a@example.com", firstRegister!.Email);
     }
 
+    [Fact]
+    public void Linq_All()
+    {
+        var audits = new List<Audit>
+        {
+            new("UserLoggedIn", "a@example.com", DateTime.UtcNow.AddMinutes(-10)),
+            new("UserLoggedIn", "b@example.com", DateTime.UtcNow.AddMinutes(-5)),
+        };
+
+        var allAreLogins = audits.All(a => a.EventType == "UserLoggedIn");
+        Assert.True(allAreLogins);
+    }
+
+    [Fact]
+    public void Linq_GroupBy_CountPerEmail()
+    {
+        var audits = new List<Audit>
+        {
+            new("UserLoggedIn", "a@example.com", DateTime.UtcNow.AddMinutes(-10)),
+            new("UserLoggedIn", "a@example.com", DateTime.UtcNow.AddMinutes(-5)),
+            new("UserLoggedIn", "b@example.com", DateTime.UtcNow.AddMinutes(-2)),
+        };
+
+        var counts = audits
+            .GroupBy(a => a.Email)
+            .ToDictionary(g => g.Key, g => g.Count());
+
+        Assert.Equal(2, counts["a@example.com"]);
+        Assert.Equal(1, counts["b@example.com"]);
+    }
+
+
 }
