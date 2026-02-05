@@ -44,10 +44,14 @@ public sealed class AuditConsumer : BackgroundService
                 using var scope = _scopeFactory.CreateScope();
                 var repo = scope.ServiceProvider.GetRequiredService<IAuditLogRepository>();
 
-                var evt = System.Text.Json.JsonSerializer.Deserialize<SecureAccess.Api.Contracts.UserLoggedInEvent>(payload);
-                var occurredAt = evt?.OccurredAtUtc ?? DateTime.UtcNow;
+                if (!AuditEventParser.TryParseUserLoggedIn(payload, out var evt))
+                {
+                    _log.LogWarning("Poison audit message (bad json). tag={Tag}", ea.DeliveryTag);
+                    await channel.BasicNackAsync(ea.DeliveryTag, false, requeue: false, cancellationToken: stoppingToken);
+                    return;
+                }
 
-                repo.Add("UserLoggedIn", payload, occurredAt);
+                repo.Add("UserLoggedIn", payload, evt.OccurredAtUtc);
 
 
                 await channel.BasicAckAsync(ea.DeliveryTag, multiple: false, cancellationToken: stoppingToken);
